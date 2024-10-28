@@ -44,6 +44,21 @@ class DatabaseHelper {
     );
   }
 
+  Future<int?> getIdByNik(String nik) async {
+    final db = await database; // Mendapatkan instance database
+    final List<Map<String, dynamic>> maps = await db.query(
+      'form_entries', // Nama tabel
+      columns: ['id'], // Kolom yang ingin diambil
+      where: 'nik = ?',
+      whereArgs: [nik],
+    );
+
+    if (maps.isNotEmpty) {
+      return maps.first['id']; // Mengembalikan ID dari entri pertama
+    }
+    return null; // Mengembalikan null jika tidak ditemukan
+  }
+
   // Fungsi untuk menyimpan data
   Future<int> insertFormEntry(Map<String, dynamic> data) async {
     Database db = await database;

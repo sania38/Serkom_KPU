@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/constant/font_constant.dart';
+import 'package:serkom/app/db/database_helper.dart';
 
 import '../controller/form_entry_controller.dart';
 
 class FormEntryView extends GetView<FormEntryController> {
   @override
   Widget build(BuildContext context) {
+    DatabaseHelper dbHelper = DatabaseHelper();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -284,31 +286,49 @@ class FormEntryView extends GetView<FormEntryController> {
                   minimumSize: Size(double.infinity, 48),
                 ),
                 onPressed: () async {
-                  // Validasi input sebelum menyimpan data
-                  if (controller.validateInput()) {
-                    try {
-                      await controller
-                          .saveData(); // Simpan data ke SharedPreferences
-                      await controller
-                          .saveDataToSQLite(); // Simpan data ke SQLite
-                      await controller
-                          .clearData(); // Hapus data dari SharedPreferences
+                  // Ambil NIK dari input
+                  String nik = controller.control[0].text;
 
-                      for (var ctrl in controller.control) {
-                        ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
+                  // Cek apakah NIK sudah ada di dalam database
+                  bool nikExists = await dbHelper.checkIfNikExists(nik);
+
+                  if (nikExists) {
+                    // Jika NIK sudah ada, ambil ID NIK dan arahkan ke halaman detail
+                    int? id = await dbHelper.getIdByNik(nik);
+                    if (id != null) {
+                      // Arahkan ke halaman detail dengan ID
+                      Get.toNamed('/detail',
+                          arguments:
+                              id); // Ganti '/detail' dengan rute yang sesuai
+                    }
+                  } else {
+                    // Validasi input sebelum menyimpan data
+                    if (controller.validateInput()) {
+                      try {
+                        await controller
+                            .saveData(); // Simpan data ke SharedPreferences
+                        await controller
+                            .saveDataToSQLite(); // Simpan data ke SQLite
+                        await controller
+                            .clearData(); // Hapus data dari SharedPreferences
+
+                        for (var ctrl in controller.control) {
+                          ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
+                        }
+                        controller.tanggal.clear(); // Kosongkan tanggal
+                        controller.lokasi.clear(); // Kosongkan lokasi
+                        controller.imagePath.value =
+                            ''; // Kosongkan path gambar
+
+                        print("Data submitted, saved to SQLite, and cleared.");
+                      } catch (e) {
+                        print("Error occurred: $e");
+                        Get.snackbar(
+                          'Error',
+                          'Terjadi kesalahan saat menyimpan data.',
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
                       }
-                      controller.tanggal.clear(); // Kosongkan tanggal
-                      controller.lokasi.clear(); // Kosongkan lokasi
-                      controller.imagePath.value = ''; // Kosongkan path gambar
-
-                      print("Data submitted, saved to SQLite, and cleared.");
-                    } catch (e) {
-                      print("Error occurred: $e");
-                      Get.snackbar(
-                        'Error',
-                        'Terjadi kesalahan saat menyimpan data.',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
                     }
                   }
                 },

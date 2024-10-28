@@ -194,9 +194,15 @@ class FormEntryController extends GetxController {
     // Cek apakah NIK sudah ada di dalam database
     bool nikExists = await _dbHelper.checkIfNikExists(nik);
     if (nikExists) {
-      Get.snackbar('Error', 'NIK sudah terdaftar dalam database');
+      // Ambil ID berdasarkan NIK
+      int? id = await _dbHelper.getIdByNik(nik);
+      // Navigasi ke halaman detail dengan ID
+      Get.toNamed('/detail',
+          arguments: id); // Pastikan '/detail' adalah nama route yang sesuai
       return; // Hentikan penyimpanan data jika NIK sudah ada
     }
+
+    // Jika NIK belum ada, simpan data baru
     Map<String, dynamic> formData = {
       'nik': control[0].text,
       'nama': control[1].text,
