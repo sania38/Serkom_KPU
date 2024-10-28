@@ -4,11 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:serkom/app/db/database_helper.dart';
-// import 'package:location/location.dart' as loc;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FormEntryController extends GetxController {
-  var teks = <String>["NIK", "Nama", "No.HP"]; // Contoh teks
+  var teks = <String>["NIK", "Nama", "No.HP"];
   var hint = <String>[
     "3305xxxxxxxxxxxx",
     "Nama",
@@ -23,8 +22,7 @@ class FormEntryController extends GetxController {
   var longitude = 0.0.obs;
   var address = ''.obs;
   var isLoading = false.obs;
-  var errorMessages =
-      <String>["", "", ""].obs; // Menyimpan pesan error untuk setiap field
+  var errorMessages = <String>["", "", ""].obs;
   var errtangal = ''.obs;
   var errAlamat = ''.obs;
   var errImagePath = ''.obs;
@@ -40,10 +38,8 @@ class FormEntryController extends GetxController {
     );
 
     if (selectedDate != null) {
-      // Format tanggal menjadi "Tanggal Bulan Tahun"
       String formattedDate = DateFormat('d-MM-y').format(selectedDate);
-      tanggal.text =
-          formattedDate; // Update controller dengan tanggal yang diformat
+      tanggal.text = formattedDate;
     }
   }
 
@@ -98,7 +94,7 @@ class FormEntryController extends GetxController {
     for (var i = 0; i < teks.length; i++) {
       control.add(TextEditingController());
     }
-    loadData(); // Memanggil fungsi loadData saat controller diinisialisasi
+    loadData();
   }
 
   // Fungsi untuk menyimpan data ke SharedPreferences

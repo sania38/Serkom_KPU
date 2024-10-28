@@ -68,18 +68,17 @@ class DatabaseHelper {
   }
 
   Future<int?> getIdByNik(String nik) async {
-    var db =
-        await database; // Replace with your method to get the database instance
+    var db = await database;
     var result = await db.query(
-      'form_entries', // Replace with your table name
+      'form_entries',
       where: 'nik = ?',
       whereArgs: [nik],
     );
 
     if (result.isNotEmpty) {
-      return result.first['id'] as int; // Cast the result to int
+      return result.first['id'] as int;
     }
-    return null; // Return null if not found
+    return null;
   }
 
   // Fungsi untuk menghapus data
@@ -92,6 +91,6 @@ class DatabaseHelper {
   Future<void> close() async {
     final db = await database;
     await db.close();
-    _database = null; // Reset database instance
+    _database = null;
   }
 }

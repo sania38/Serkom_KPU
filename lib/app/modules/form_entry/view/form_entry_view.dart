@@ -94,7 +94,7 @@ class FormEntryView extends GetView<FormEntryController> {
                     child: Row(
                       children: [
                         Obx(() => Radio<int>(
-                              value: 1, // Nilai untuk radio button pertama
+                              value: 1,
                               groupValue: controller.selectedValue.value,
                               onChanged: (value) {
                                 controller.selectedValue.value = value!;
@@ -102,7 +102,7 @@ class FormEntryView extends GetView<FormEntryController> {
                             )),
                         Text("L", style: FontConstant.bodyStyle2),
                         Obx(() => Radio<int>(
-                              value: 2, // Nilai untuk radio button kedua
+                              value: 2,
                               groupValue: controller.selectedValue.value,
                               onChanged: (value) {
                                 controller.selectedValue.value = value!;
@@ -194,7 +194,6 @@ class FormEntryView extends GetView<FormEntryController> {
                         }),
                         ElevatedButton(
                           onPressed: () async {
-                            // controller.setLatLong(-6.200000, 106.816666);
                             await controller.getCurrentLocation();
                           },
                           child: Text(
@@ -228,7 +227,6 @@ class FormEntryView extends GetView<FormEntryController> {
                             await FilePicker.platform.pickFiles();
 
                         if (result != null && result.files.isNotEmpty) {
-                          // Update the controller with the picked image path
                           controller.setImage(result.files.single.path!);
                         }
                       },
@@ -302,20 +300,15 @@ class FormEntryView extends GetView<FormEntryController> {
                     );
 
                     // Ambil ID pemilih dari database
-                    int? id = await _dbHelper
-                        .getIdByNik(nik); // Change to int? to handle nulls
+                    int? id = await _dbHelper.getIdByNik(nik);
                     print(nik);
 
                     if (id != null) {
-                      // ID exists, proceed to navigate to detail page
                       final detailController =
                           Get.find<DetailPemilihController>();
-                      detailController
-                          .fetchPemilihDetail(id); // Fetch details for the ID
-                      Get.to(DetailPemilihView(
-                          id: id)); // Navigate to detail view with the ID
+                      detailController.fetchPemilihDetail(id);
+                      Get.to(DetailPemilihView(id: id));
                     } else {
-                      // Handle case when ID is not found
                       Get.snackbar(
                           'Not Found', 'NIK tidak ditemukan di database');
                     }
@@ -323,7 +316,6 @@ class FormEntryView extends GetView<FormEntryController> {
                     // Validasi input sebelum menyimpan data jika NIK tidak ada
                     if (controller.validateInput()) {
                       try {
-                        // Jika NIK tidak ada, simpan data ke SharedPreferences dan SQLite
                         await controller
                             .saveData(); // Simpan data ke SharedPreferences
                         await controller
@@ -332,12 +324,11 @@ class FormEntryView extends GetView<FormEntryController> {
                             .clearData(); // Hapus data dari SharedPreferences
 
                         for (var ctrl in controller.control) {
-                          ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
+                          ctrl.clear();
                         }
-                        controller.tanggal.clear(); // Kosongkan tanggal
-                        controller.lokasi.clear(); // Kosongkan lokasi
-                        controller.imagePath.value =
-                            ''; // Kosongkan path gambar
+                        controller.tanggal.clear();
+                        controller.lokasi.clear();
+                        controller.imagePath.value = '';
 
                         print("Data submitted, saved to SQLite, and cleared.");
                       } catch (e) {
@@ -349,7 +340,6 @@ class FormEntryView extends GetView<FormEntryController> {
                         );
                       }
                     } else {
-                      // Handle case where input is invalid
                       Get.snackbar(
                           'Invalid Input', 'Silakan periksa input Anda.');
                     }
