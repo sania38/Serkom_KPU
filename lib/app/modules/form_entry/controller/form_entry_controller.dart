@@ -191,12 +191,6 @@ class FormEntryController extends GetxController {
   Future<void> saveDataToSQLite() async {
     String nik = control[0].text;
 
-    // Cek apakah NIK sudah ada di dalam database
-    bool nikExists = await _dbHelper.checkIfNikExists(nik);
-    if (nikExists) {
-      Get.snackbar('Error', 'NIK sudah terdaftar dalam database');
-      return; // Hentikan penyimpanan data jika NIK sudah ada
-    }
     Map<String, dynamic> formData = {
       'nik': control[0].text,
       'nama': control[1].text,

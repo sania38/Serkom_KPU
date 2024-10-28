@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/modules/data_pemilih/controller/data_pemilih_controller.dart';
+import 'package:serkom/app/modules/detail_pemilih/controller/detail_pemilih_controller.dart';
 import 'package:serkom/app/modules/form_entry/controller/form_entry_controller.dart';
 
 import 'app/routes/app_pages.dart';
@@ -10,6 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(FormEntryController());
   Get.put(DataPemilihController());
+  Get.put(DetailPemilihController());
   runApp(
     ScreenUtilInit(
       designSize: Size(375, 812),

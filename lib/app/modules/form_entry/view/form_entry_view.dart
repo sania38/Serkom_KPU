@@ -6,10 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/constant/font_constant.dart';
+import 'package:serkom/app/db/database_helper.dart';
+import 'package:serkom/app/modules/detail_pemilih/controller/detail_pemilih_controller.dart';
+import 'package:serkom/app/modules/detail_pemilih/view/detail_pemilih_view.dart';
 
 import '../controller/form_entry_controller.dart';
 
 class FormEntryView extends GetView<FormEntryController> {
+  final DatabaseHelper _dbHelper = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -284,31 +288,70 @@ class FormEntryView extends GetView<FormEntryController> {
                   minimumSize: Size(double.infinity, 48),
                 ),
                 onPressed: () async {
-                  // Validasi input sebelum menyimpan data
-                  if (controller.validateInput()) {
-                    try {
-                      await controller
-                          .saveData(); // Simpan data ke SharedPreferences
-                      await controller
-                          .saveDataToSQLite(); // Simpan data ke SQLite
-                      await controller
-                          .clearData(); // Hapus data dari SharedPreferences
+                  // Ambil NIK dari input
+                  String nik = controller.control[0].text;
 
-                      for (var ctrl in controller.control) {
-                        ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
-                      }
-                      controller.tanggal.clear(); // Kosongkan tanggal
-                      controller.lokasi.clear(); // Kosongkan lokasi
-                      controller.imagePath.value = ''; // Kosongkan path gambar
+                  // Cek apakah NIK sudah ada di dalam database
+                  bool nikExists = await _dbHelper.checkIfNikExists(nik);
 
-                      print("Data submitted, saved to SQLite, and cleared.");
-                    } catch (e) {
-                      print("Error occurred: $e");
+                  if (nikExists) {
+                    Get.snackbar(
+                      'Informasi',
+                      'NIK sudah ada di database.',
+                      snackPosition: SnackPosition.TOP,
+                    );
+
+                    // Ambil ID pemilih dari database
+                    int? id = await _dbHelper
+                        .getIdByNik(nik); // Change to int? to handle nulls
+                    print(nik);
+
+                    if (id != null) {
+                      // ID exists, proceed to navigate to detail page
+                      final detailController =
+                          Get.find<DetailPemilihController>();
+                      detailController
+                          .fetchPemilihDetail(id); // Fetch details for the ID
+                      Get.to(DetailPemilihView(
+                          id: id)); // Navigate to detail view with the ID
+                    } else {
+                      // Handle case when ID is not found
                       Get.snackbar(
-                        'Error',
-                        'Terjadi kesalahan saat menyimpan data.',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
+                          'Not Found', 'NIK tidak ditemukan di database');
+                    }
+                  } else {
+                    // Validasi input sebelum menyimpan data jika NIK tidak ada
+                    if (controller.validateInput()) {
+                      try {
+                        // Jika NIK tidak ada, simpan data ke SharedPreferences dan SQLite
+                        await controller
+                            .saveData(); // Simpan data ke SharedPreferences
+                        await controller
+                            .saveDataToSQLite(); // Simpan data ke SQLite
+                        await controller
+                            .clearData(); // Hapus data dari SharedPreferences
+
+                        for (var ctrl in controller.control) {
+                          ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
+                        }
+                        controller.tanggal.clear(); // Kosongkan tanggal
+                        controller.lokasi.clear(); // Kosongkan lokasi
+                        controller.imagePath.value =
+                            ''; // Kosongkan path gambar
+
+                        print("Data submitted, saved to SQLite, and cleared.");
+                      } catch (e) {
+                        print("Error occurred: $e");
+                        Get.snackbar(
+                          'Error',
+                          'Terjadi kesalahan saat menyimpan data.',
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
+                      }
+                    } else {
+                      // Handle case where input is invalid
+                      Get.snackbar(
+                          'Invalid Input', 'Silakan periksa input Anda.');
                     }
                   }
                 },
