@@ -6,14 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/constant/font_constant.dart';
-import 'package:serkom/app/db/database_helper.dart';
-import 'package:serkom/app/modules/detail_pemilih/controller/detail_pemilih_controller.dart';
-import 'package:serkom/app/modules/detail_pemilih/view/detail_pemilih_view.dart';
 
 import '../controller/form_entry_controller.dart';
 
 class FormEntryView extends GetView<FormEntryController> {
-  final DatabaseHelper _dbHelper = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +90,7 @@ class FormEntryView extends GetView<FormEntryController> {
                     child: Row(
                       children: [
                         Obx(() => Radio<int>(
-                              value: 1,
+                              value: 1, // Nilai untuk radio button pertama
                               groupValue: controller.selectedValue.value,
                               onChanged: (value) {
                                 controller.selectedValue.value = value!;
@@ -102,7 +98,7 @@ class FormEntryView extends GetView<FormEntryController> {
                             )),
                         Text("L", style: FontConstant.bodyStyle2),
                         Obx(() => Radio<int>(
-                              value: 2,
+                              value: 2, // Nilai untuk radio button kedua
                               groupValue: controller.selectedValue.value,
                               onChanged: (value) {
                                 controller.selectedValue.value = value!;
@@ -194,6 +190,7 @@ class FormEntryView extends GetView<FormEntryController> {
                         }),
                         ElevatedButton(
                           onPressed: () async {
+                            // controller.setLatLong(-6.200000, 106.816666);
                             await controller.getCurrentLocation();
                           },
                           child: Text(
@@ -227,6 +224,7 @@ class FormEntryView extends GetView<FormEntryController> {
                             await FilePicker.platform.pickFiles();
 
                         if (result != null && result.files.isNotEmpty) {
+                          // Update the controller with the picked image path
                           controller.setImage(result.files.single.path!);
                         }
                       },
@@ -286,62 +284,31 @@ class FormEntryView extends GetView<FormEntryController> {
                   minimumSize: Size(double.infinity, 48),
                 ),
                 onPressed: () async {
-                  // Ambil NIK dari input
-                  String nik = controller.control[0].text;
+                  // Validasi input sebelum menyimpan data
+                  if (controller.validateInput()) {
+                    try {
+                      await controller
+                          .saveData(); // Simpan data ke SharedPreferences
+                      await controller
+                          .saveDataToSQLite(); // Simpan data ke SQLite
+                      await controller
+                          .clearData(); // Hapus data dari SharedPreferences
 
-                  // Cek apakah NIK sudah ada di dalam database
-                  bool nikExists = await _dbHelper.checkIfNikExists(nik);
-
-                  if (nikExists) {
-                    Get.snackbar(
-                      'Informasi',
-                      'NIK sudah ada di database.',
-                      snackPosition: SnackPosition.TOP,
-                    );
-
-                    // Ambil ID pemilih dari database
-                    int? id = await _dbHelper.getIdByNik(nik);
-                    print(nik);
-
-                    if (id != null) {
-                      final detailController =
-                          Get.find<DetailPemilihController>();
-                      detailController.fetchPemilihDetail(id);
-                      Get.to(DetailPemilihView(id: id));
-                    } else {
-                      Get.snackbar(
-                          'Not Found', 'NIK tidak ditemukan di database');
-                    }
-                  } else {
-                    // Validasi input sebelum menyimpan data jika NIK tidak ada
-                    if (controller.validateInput()) {
-                      try {
-                        await controller
-                            .saveData(); // Simpan data ke SharedPreferences
-                        await controller
-                            .saveDataToSQLite(); // Simpan data ke SQLite
-                        await controller
-                            .clearData(); // Hapus data dari SharedPreferences
-
-                        for (var ctrl in controller.control) {
-                          ctrl.clear();
-                        }
-                        controller.tanggal.clear();
-                        controller.lokasi.clear();
-                        controller.imagePath.value = '';
-
-                        print("Data submitted, saved to SQLite, and cleared.");
-                      } catch (e) {
-                        print("Error occurred: $e");
-                        Get.snackbar(
-                          'Error',
-                          'Terjadi kesalahan saat menyimpan data.',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
+                      for (var ctrl in controller.control) {
+                        ctrl.clear(); // Kosongkan TextEditingController untuk setiap field
                       }
-                    } else {
+                      controller.tanggal.clear(); // Kosongkan tanggal
+                      controller.lokasi.clear(); // Kosongkan lokasi
+                      controller.imagePath.value = ''; // Kosongkan path gambar
+
+                      print("Data submitted, saved to SQLite, and cleared.");
+                    } catch (e) {
+                      print("Error occurred: $e");
                       Get.snackbar(
-                          'Invalid Input', 'Silakan periksa input Anda.');
+                        'Error',
+                        'Terjadi kesalahan saat menyimpan data.',
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
                     }
                   }
                 },

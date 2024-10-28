@@ -7,6 +7,20 @@ class DetailPemilihController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Retrieve ID from arguments and ensure it's an integer
+    final dynamic idArg = Get.arguments;
+    final int id =
+        (idArg is int) ? idArg : int.tryParse(idArg.toString()) ?? -1;
+
+    if (id != -1) {
+      fetchPemilihDetail(id);
+      print(id); // Fetch details if the ID is valid
+    } else {
+      print("Invalid ID: $id");
+      pemilihDetail.value = {'error': 'Invalid ID provided'};
+    }
+    fetchPemilihDetail(id);
   }
 
   void fetchPemilihDetail(int id) async {

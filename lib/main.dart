@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Get.put(FormEntryController());
   Get.put(DataPemilihController());
-  Get.put(DetailPemilihController());
+
   runApp(
     ScreenUtilInit(
       designSize: Size(375, 812),

@@ -4,10 +4,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:serkom/app/db/database_helper.dart';
+// import 'package:location/location.dart' as loc;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FormEntryController extends GetxController {
-  var teks = <String>["NIK", "Nama", "No.HP"];
+  var teks = <String>["NIK", "Nama", "No.HP"]; // Contoh teks
   var hint = <String>[
     "3305xxxxxxxxxxxx",
     "Nama",
@@ -22,7 +23,8 @@ class FormEntryController extends GetxController {
   var longitude = 0.0.obs;
   var address = ''.obs;
   var isLoading = false.obs;
-  var errorMessages = <String>["", "", ""].obs;
+  var errorMessages =
+      <String>["", "", ""].obs; // Menyimpan pesan error untuk setiap field
   var errtangal = ''.obs;
   var errAlamat = ''.obs;
   var errImagePath = ''.obs;
@@ -38,8 +40,10 @@ class FormEntryController extends GetxController {
     );
 
     if (selectedDate != null) {
+      // Format tanggal menjadi "Tanggal Bulan Tahun"
       String formattedDate = DateFormat('d-MM-y').format(selectedDate);
-      tanggal.text = formattedDate;
+      tanggal.text =
+          formattedDate; // Update controller dengan tanggal yang diformat
     }
   }
 
@@ -94,7 +98,7 @@ class FormEntryController extends GetxController {
     for (var i = 0; i < teks.length; i++) {
       control.add(TextEditingController());
     }
-    loadData();
+    loadData(); // Memanggil fungsi loadData saat controller diinisialisasi
   }
 
   // Fungsi untuk menyimpan data ke SharedPreferences
@@ -187,6 +191,12 @@ class FormEntryController extends GetxController {
   Future<void> saveDataToSQLite() async {
     String nik = control[0].text;
 
+    // Cek apakah NIK sudah ada di dalam database
+    bool nikExists = await _dbHelper.checkIfNikExists(nik);
+    if (nikExists) {
+      Get.snackbar('Error', 'NIK sudah terdaftar dalam database');
+      return; // Hentikan penyimpanan data jika NIK sudah ada
+    }
     Map<String, dynamic> formData = {
       'nik': control[0].text,
       'nama': control[1].text,

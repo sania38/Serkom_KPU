@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/constant/font_constant.dart';
 import 'package:serkom/app/modules/detail_pemilih/controller/detail_pemilih_controller.dart';
-import 'dart:io';
+import 'dart:io'; // Import this for File class if using local images
 
 class DetailPemilihView extends GetView<DetailPemilihController> {
   final int id; // Define the id parameter
@@ -175,9 +175,13 @@ class DetailPemilihView extends GetView<DetailPemilihController> {
                               ),
                             ),
                             child: Image.file(
-                              File(pemilih['image_path']),
-                              height: 300,
-                              fit: BoxFit.cover,
+                              File(pemilih[
+                                  'image_path']), // Use File for local images
+                              height:
+                                  300, // Set the height you want for the image
+
+                              fit: BoxFit
+                                  .cover, // Adjust the image to cover the container
                             ),
                           ),
                         ),
