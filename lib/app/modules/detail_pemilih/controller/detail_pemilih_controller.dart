@@ -15,7 +15,6 @@ class DetailPemilihController extends GetxController {
 
     if (id != -1) {
       fetchPemilihDetail(id);
-      print(id); // Fetch details if the ID is valid
     } else {
       print("Invalid ID: $id");
       pemilihDetail.value = {'error': 'Invalid ID provided'};

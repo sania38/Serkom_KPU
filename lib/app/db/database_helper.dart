@@ -45,18 +45,18 @@ class DatabaseHelper {
   }
 
   Future<int?> getIdByNik(String nik) async {
-    final db = await database; // Mendapatkan instance database
+    final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(
-      'form_entries', // Nama tabel
-      columns: ['id'], // Kolom yang ingin diambil
+      'form_entries',
+      columns: ['id'],
       where: 'nik = ?',
       whereArgs: [nik],
     );
 
     if (maps.isNotEmpty) {
-      return maps.first['id']; // Mengembalikan ID dari entri pertama
+      return maps.first['id'];
     }
-    return null; // Mengembalikan null jika tidak ditemukan
+    return null;
   }
 
   // Fungsi untuk menyimpan data
@@ -74,7 +74,7 @@ class DatabaseHelper {
   Future<bool> checkIfNikExists(String nik) async {
     final db = await database;
     List<Map<String, dynamic>> results = await db.query(
-      'form_entries', // Nama tabel
+      'form_entries',
       where: 'nik = ?',
       whereArgs: [nik],
     );
@@ -91,6 +91,6 @@ class DatabaseHelper {
   Future<void> close() async {
     final db = await database;
     await db.close();
-    _database = null; // Reset database instance
+    _database = null;
   }
 }

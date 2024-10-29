@@ -175,7 +175,7 @@ class FormEntryView extends GetView<FormEntryController> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   contentPadding: EdgeInsets.all(12),
-                                  hintText: "klik ambil alamat",
+                                  hintText: "klik ambil lokasi",
                                 ),
                                 onChanged: (value) {
                                   // Update controller jika teks diubah
@@ -192,7 +192,6 @@ class FormEntryView extends GetView<FormEntryController> {
                         }),
                         ElevatedButton(
                           onPressed: () async {
-                            // controller.setLatLong(-6.200000, 106.816666);
                             await controller.getCurrentLocation();
                           },
                           child: Text(
@@ -224,9 +223,7 @@ class FormEntryView extends GetView<FormEntryController> {
                       onTap: () async {
                         FilePickerResult? result =
                             await FilePicker.platform.pickFiles();
-
                         if (result != null && result.files.isNotEmpty) {
-                          // Update the controller with the picked image path
                           controller.setImage(result.files.single.path!);
                         }
                       },

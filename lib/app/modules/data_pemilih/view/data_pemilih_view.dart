@@ -33,7 +33,7 @@ class DataPemilihView extends GetView<DataPemilihController> {
                   height: 56.0,
                   child: ListTile(
                     title: Text(
-                      pemilih['nama'], // Menampilkan nama pemilih
+                      pemilih['nama'],
                       style: FontConstant.bodyStyle,
                     ),
                     onTap: () {

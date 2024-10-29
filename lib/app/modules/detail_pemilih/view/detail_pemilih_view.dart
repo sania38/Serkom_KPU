@@ -4,10 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:serkom/app/constant/font_constant.dart';
 import 'package:serkom/app/modules/detail_pemilih/controller/detail_pemilih_controller.dart';
-import 'dart:io'; // Import this for File class if using local images
+import 'dart:io';
 
 class DetailPemilihView extends GetView<DetailPemilihController> {
-  final int id; // Define the id parameter
+  final int id;
 
   // Constructor that accepts the id parameter
   DetailPemilihView({required this.id});
@@ -23,8 +23,7 @@ class DetailPemilihView extends GetView<DetailPemilihController> {
         centerTitle: true,
       ),
       body: Obx(() {
-        var pemilih =
-            controller.pemilihDetail; // Ambil detail pemilih dari controller
+        var pemilih = controller.pemilihDetail;
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -156,7 +155,6 @@ class DetailPemilihView extends GetView<DetailPemilihController> {
               ),
               SizedBox(height: 8),
               Center(child: Text("Gambar", style: FontConstant.heading2)),
-              // Displaying the image
               pemilih['image_path'] != null && pemilih['image_path'].isNotEmpty
                   ? Column(
                       children: [
@@ -175,13 +173,9 @@ class DetailPemilihView extends GetView<DetailPemilihController> {
                               ),
                             ),
                             child: Image.file(
-                              File(pemilih[
-                                  'image_path']), // Use File for local images
-                              height:
-                                  300, // Set the height you want for the image
-
-                              fit: BoxFit
-                                  .cover, // Adjust the image to cover the container
+                              File(pemilih['image_path']),
+                              height: 300,
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),

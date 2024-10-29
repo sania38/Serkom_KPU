@@ -4,11 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:serkom/app/db/database_helper.dart';
-// import 'package:location/location.dart' as loc;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FormEntryController extends GetxController {
-  var teks = <String>["NIK", "Nama", "No.HP"]; // Contoh teks
+  var teks = <String>["NIK", "Nama", "No.HP"];
   var hint = <String>[
     "3305xxxxxxxxxxxx",
     "Nama",
@@ -23,8 +22,7 @@ class FormEntryController extends GetxController {
   var longitude = 0.0.obs;
   var address = ''.obs;
   var isLoading = false.obs;
-  var errorMessages =
-      <String>["", "", ""].obs; // Menyimpan pesan error untuk setiap field
+  var errorMessages = <String>["", "", ""].obs;
   var errtangal = ''.obs;
   var errAlamat = ''.obs;
   var errImagePath = ''.obs;
@@ -40,10 +38,8 @@ class FormEntryController extends GetxController {
     );
 
     if (selectedDate != null) {
-      // Format tanggal menjadi "Tanggal Bulan Tahun"
       String formattedDate = DateFormat('d-MM-y').format(selectedDate);
-      tanggal.text =
-          formattedDate; // Update controller dengan tanggal yang diformat
+      tanggal.text = formattedDate;
     }
   }
 
@@ -83,7 +79,7 @@ class FormEntryController extends GetxController {
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
         address.value =
-            "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+            "${place.subLocality}, ${place.locality}, ${place.subAdministrativeArea}, ${place.administrativeArea}, ${place.country}, ${place.postalCode}, ";
       } else {
         address.value = "Alamat tidak ditemukan.";
       }
@@ -92,13 +88,11 @@ class FormEntryController extends GetxController {
     }
   }
 
-  // Constructor untuk inisialisasi controller
   FormEntryController() {
-    // Inisialisasi TextEditingController
     for (var i = 0; i < teks.length; i++) {
       control.add(TextEditingController());
     }
-    loadData(); // Memanggil fungsi loadData saat controller diinisialisasi
+    loadData();
   }
 
   // Fungsi untuk menyimpan data ke SharedPreferences
@@ -197,8 +191,7 @@ class FormEntryController extends GetxController {
       // Ambil ID berdasarkan NIK
       int? id = await _dbHelper.getIdByNik(nik);
       // Navigasi ke halaman detail dengan ID
-      Get.toNamed('/detail',
-          arguments: id); // Pastikan '/detail' adalah nama route yang sesuai
+      Get.toNamed('/detail', arguments: id);
       return; // Hentikan penyimpanan data jika NIK sudah ada
     }
 
@@ -214,7 +207,7 @@ class FormEntryController extends GetxController {
     };
 
     await _dbHelper.insertFormEntry(formData);
-    Get.snackbar('Success', 'Data berhasil disimpan ke SQLite');
+    Get.snackbar('Success', 'Data berhasil disimpan');
 
     // Mengosongkan field setelah data disimpan
     for (var controller in control) {
@@ -244,6 +237,6 @@ class FormEntryController extends GetxController {
   // Fungsi untuk menghapus semua data dari SQLite
   Future<void> clearSQLiteData() async {
     await _dbHelper.deleteAllEntries();
-    Get.snackbar('Success', 'Semua data berhasil dihapus dari SQLite');
+    Get.snackbar('Success', 'Semua data berhasil dihapus');
   }
 }
